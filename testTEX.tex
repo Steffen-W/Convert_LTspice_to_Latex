@@ -1,0 +1,16 @@
+\documentclass{article}
+\usepackage{amsmath} 
+\usepackage{tikz} 
+\usepackage[siunitx,european]{circuitikz}
+\usepackage{bashful}
+
+%You must add "-shell-escape" to your compile settings in your tex compiler. But there exist safety concerns!
+\def\importLTSPICE(#1){%
+	\immediate\write18{python -c "import LTspiceToTexConverter as t; t.LtSpiceToLatex(filenameLTspice = '#1.asc', lt_spice_directory = r'D:/Programme/LTC/LTspiceXVII/lib/sym')"}
+	\input{#1}
+}
+
+\begin{document}
+\centering
+\importLTSPICE(Draft)
+\end{document}
