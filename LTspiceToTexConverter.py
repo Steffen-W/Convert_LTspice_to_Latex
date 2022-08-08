@@ -478,5 +478,9 @@ def LtSpiceToLatex(saveFile='', filenameLTspice='Draft.asc', lt_spice_directory=
         f.write('\n\\end{document}')
 
     f.close()
+    f = open(saveFile, "r")
+    temp = f.read()
+    f.close()
 
     print('Congratulations. The run was successful.')
+    return temp

@@ -12,6 +12,8 @@ else:
 fileName_input = 'Draft.asc'
 print("input:  ", fileName_input)
 
-LtSpiceToLatex(filenameLTspice=fileName_input,
-               lt_spice_directory=os.path.expanduser(path_ltspice),
-               fullExample=1)
+out = LtSpiceToLatex(filenameLTspice=fileName_input,
+                     lt_spice_directory=os.path.expanduser(path_ltspice),
+                     fullExample=1)
+
+# print(out)
