@@ -1,5 +1,4 @@
 import numpy as np
-
 import os
 
 
@@ -21,22 +20,20 @@ def LtSpiceToLatex(saveFile='', filenameLTspice='Draft.asc', lt_spice_directory=
     global count_bauelemente
     global BauteileAddSpeicher
 
-    saveFile = os.path.splitext(filenameLTspice)[0] + r'.tex'
+    if saveFile == '':
+        saveFile = os.path.splitext(filenameLTspice)[0] + r'.tex'
 
-    def print2(zuPrint):
-        idx = 0
-        for xx in zuPrint:
-            print('{:>3} | '.format(str(idx)), end=" ")
-            idx = idx + 1
-            for x in xx:
-                print('{:>15}'.format(str(x)), end=" ")
-            print(' ')
+    print('saveFile: ', saveFile)
 
     def first_item(list_or_none):
         if list_or_none:
             return list_or_none[0]
 
     def findPinsInLib(name):
+        if not os.path.isdir(lt_spice_directory):
+            print('error! lt_spice_directory not exist: ', lt_spice_directory)
+            return []
+
         with open(os.path.join(lt_spice_directory, name + ".asy"), "r") as f:
             sym = f.readlines()
 
@@ -73,8 +70,11 @@ def LtSpiceToLatex(saveFile='', filenameLTspice='Draft.asc', lt_spice_directory=
         anzahlBauteil = len(Bauteilliste)
         Knoten = KnotenSuche(x1)
         KnotenListe[Knoten][2].append(anzahlBauteil)
-        if befehl[0] == 'FLAG':
+        if befehl[0] == 'FLAG' and befehl[3] == '0':
             Bauteilliste.append([Knoten, 'FLAG', '', []])
+        elif befehl[0] == 'FLAG':
+            text = ' '.join(befehl[3:])
+            Bauteilliste.append([Knoten, 'TEXT', text, []])
         else:
             text = ' '.join(befehl[5:]).replace(';', '')
             Bauteilliste.append([Knoten, 'TEXT', text, []])
@@ -156,9 +156,6 @@ def LtSpiceToLatex(saveFile='', filenameLTspice='Draft.asc', lt_spice_directory=
         for idx, x in enumerate(KnotenListe):
             KnotenListe[idx][0] = np.array(KnotenListe[idx][0])*scale
 
-    def listsearch(x, y):
-        return next((i for i, t in enumerate(x) if t == y), None)
-
     def getKnotenname(knoten):
         if KnotenListe[knoten][3]:
             return '(' + str(KnotenListe[knoten][3]) + ')'
@@ -231,6 +228,11 @@ def LtSpiceToLatex(saveFile='', filenameLTspice='Draft.asc', lt_spice_directory=
         return result.replace("\\", "")
 
     def CreateDevFromLib(name, scale=1/64):
+
+        if not os.path.isdir(lt_spice_directory):
+            print('error! lt_spice_directory not exist: ', lt_spice_directory)
+            return ''
+
         with open(os.path.join(lt_spice_directory, name + ".asy"), "r") as f:
             sym = f.readlines()
 
@@ -383,14 +385,14 @@ def LtSpiceToLatex(saveFile='', filenameLTspice='Draft.asc', lt_spice_directory=
             knotenLaufIndex = knotenLaufIndex + 1
 
     # print('DrahtListe:')
-    #print('       [Index Knoten1]  [Index Knoten2]')
-    # print2(DrahtListe)
+    # print('       [Index Knoten1]  [Index Knoten2]')
+    # print(DrahtListe)
     # print('Bauteilliste:')
-    #print('        [Index Knoten]      Bauelement            Name      Knotenname')
-    # print2(Bauteilliste)
+    # print('        [Index Knoten]      Bauelement            Name      Knotenname')
+    # print(Bauteilliste)
     # print('KnotenListe:')
-    #print('                 [x,y]         Leitung      Bauelement      Knotenname')
-    # print2(KnotenListe)
+    # print('                 [x,y]         Leitung      Bauelement      Knotenname')
+    # print(KnotenListe)
 
     f = open(saveFile, "w")
 
